@@ -93,10 +93,10 @@ defineProps<{ product: Product }>()
   display: flex;
   align-items: center;
   gap: 6px;
+  font-size: 13px;
 }
 .stars {
   color: #fbbf24;
-  font-size: 14px;
 }
 .stars-empty {
   color: #d1d5db;

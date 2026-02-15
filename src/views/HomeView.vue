@@ -283,6 +283,11 @@ const goToPage = (n: number) => productStore.setPage(n - 1)
 .sort-shell {
   position: relative;
 }
+.sort-shell .select-input {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .select-shell:focus-within {
   border-color: #111;
   box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.3);
