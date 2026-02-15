@@ -23,11 +23,12 @@ const mockProducts = [
   },
 ]
 
-vi.mock('@/services/api', () => {
-  return {
-    getProducts: async () => mockProducts,
-  }
-})
+const hoisted = vi.hoisted(() => ({
+  getMock: vi.fn(),
+}))
+vi.mock('@/services/api', () => ({
+  getProducts: hoisted.getMock,
+}))
 
 describe('productStore', () => {
   beforeEach(() => {
@@ -35,6 +36,7 @@ describe('productStore', () => {
   })
 
   it('fetchProducts popula produtos e alterna flags de loading/erro', async () => {
+    hoisted.getMock.mockResolvedValueOnce(mockProducts)
     const store = useProductStore()
 
     expect(store.isLoading).toBe(false)
@@ -47,5 +49,21 @@ describe('productStore', () => {
     expect(store.error).toBeNull()
     expect(store.products.length).toBe(mockProducts.length)
     expect(store.displayedProducts.length).toBeLessThanOrEqual(store.limit)
+  })
+
+  it('define erro ao falhar e desativa loading', async () => {
+    hoisted.getMock.mockRejectedValueOnce(new Error('Network error'))
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const store = useProductStore()
+
+    const p = store.fetchProducts()
+    expect(store.isLoading).toBe(true)
+
+    await p
+
+    expect(store.isLoading).toBe(false)
+    expect(store.error).toBe('Não foi possível carregar os produtos. Tente novamente.')
+    expect(store.products.length).toBe(0)
+    errorSpy.mockRestore()
   })
 })

@@ -1,3 +1,4 @@
+// Store de produtos: gerencia catálogo, filtros, ordenação e paginação
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { Product } from '@/types/Product'
@@ -7,7 +8,7 @@ export const useProductStore = defineStore('product', () => {
   const products = ref<Product[]>([])
   const isLoading = ref(false)
   const error = ref<string | null>(null)
-  const limit = ref(12) // page size
+  const limit = ref(12)
   const page = ref(0)
   const searchTerm = ref('')
   const selectedCategory = ref('all')

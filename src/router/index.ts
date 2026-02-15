@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
+// Configuração de rotas
+// Responsabilidades: definir rotas, lazy loading e props dinâmicas
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,7 +13,7 @@ const router = createRouter({
     {
       path: '/produto/:id',
       name: 'product-details',
-      component: () => import('../views/ProductDetailView.vue'),
+      component: () => import('../views/ProductView.vue'),
       props: true,
     },
     {

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// Card de catálogo
+// Responsabilidades: renderizar resumo clicável com navegação para detalhes
 import { RouterLink } from 'vue-router'
 import type { Product } from '@/types/Product'
 defineProps<{ product: Product }>()
@@ -15,8 +17,8 @@ defineProps<{ product: Product }>()
       <img :src="product.image" :alt="product.title" class="image" />
     </div>
     <div class="info">
-      <span class="category">{{ product.category }}</span>
       <h3 class="title" :title="product.title">{{ product.title }}</h3>
+      <span class="category">{{ product.category }}</span>
       <div class="rating">
         <span class="stars">
           {{ '★'.repeat(Math.round(product.rating.rate)).slice(0, 5) }}
@@ -60,11 +62,11 @@ defineProps<{ product: Product }>()
   align-items: center;
   justify-content: center;
   padding: 16px;
-  min-height: 220px;
+  min-height: 240px;
   background: var(--color-background-mute);
 }
 .image {
-  height: 200px;
+  height: 220px;
   max-width: 100%;
   object-fit: contain;
 }
@@ -109,5 +111,21 @@ defineProps<{ product: Product }>()
   font-size: var(--font-card-price-size);
   font-weight: 700;
   color: #111;
+}
+
+@media (max-width: 480px) {
+  .image-wrap {
+    padding: 12px;
+    min-height: 240px;
+  }
+  .image {
+    width: 100%;
+    height: 240px;
+    object-fit: contain;
+  }
+  .info {
+    padding: 10px 12px;
+    gap: 6px;
+  }
 }
 </style>

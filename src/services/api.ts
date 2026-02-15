@@ -1,3 +1,5 @@
+// Serviço de API (Axios)
+// Responsabilidades: consumir Fake Store API e expor funções de produtos
 import axios from 'axios'
 import type { Product } from '@/types/Product'
 
