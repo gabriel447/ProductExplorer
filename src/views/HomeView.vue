@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, computed, ref, watch } from 'vue'
+import { onMounted, onBeforeUnmount, computed, ref, watch } from 'vue'
 import { useProductStore } from '@/stores/productStore'
 import ProductCard from '@/components/ProductCard.vue'
 
@@ -17,9 +17,65 @@ const sortKey = computed({
   set: (value: 'price-asc' | 'price-desc' | 'best-rated') => productStore.setSortKey(value),
 })
 
+const isCategoryOpen = ref(false)
+const isSortOpen = ref(false)
+
+const categoryShell = ref<HTMLElement | null>(null)
+const sortShell = ref<HTMLElement | null>(null)
+
+const closeDropdowns = () => {
+  isCategoryOpen.value = false
+  isSortOpen.value = false
+}
+
+const categoryLabel = computed(() =>
+  category.value === 'all' ? 'Todas as categorias' : category.value,
+)
+
+const sortLabel = computed(() => {
+  if (sortKey.value === 'price-asc') return 'Preço menor para o maior'
+  if (sortKey.value === 'price-desc') return 'Preço maior para o menor'
+  return 'Melhores avaliações'
+})
+
+const toggleCategory = () => {
+  isCategoryOpen.value = !isCategoryOpen.value
+  if (isCategoryOpen.value) isSortOpen.value = false
+}
+
+const toggleSort = () => {
+  isSortOpen.value = !isSortOpen.value
+  if (isSortOpen.value) isCategoryOpen.value = false
+}
+
+const selectCategory = (value: string) => {
+  category.value = value
+  isCategoryOpen.value = false
+}
+
+const selectSort = (value: 'price-asc' | 'price-desc' | 'best-rated') => {
+  sortKey.value = value
+  isSortOpen.value = false
+}
+
+const handleClickOutside = (event: MouseEvent) => {
+  const target = event.target as Node | null
+  if (!target) return
+  const insideCategory = categoryShell.value?.contains(target)
+  const insideSort = sortShell.value?.contains(target)
+  if (!insideCategory && !insideSort) {
+    closeDropdowns()
+  }
+}
+
 onMounted(() => {
   productStore.setLimit(12)
   productStore.fetchProducts()
+  window.addEventListener('click', handleClickOutside)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('click', handleClickOutside)
 })
 
 let searchTimeout: ReturnType<typeof setTimeout> | undefined
@@ -107,22 +163,100 @@ const goToPage = (n: number) => productStore.setPage(n - 1)
           </div>
         </div>
         <div class="filter-block">
-          <div class="select-shell">
-            <select id="category-select" v-model="category" class="select-input">
-              <option value="all">Todas as categorias</option>
-              <option v-for="cat in productStore.categories" :key="cat" :value="cat">
-                {{ cat }}
-              </option>
-            </select>
+          <div
+            ref="categoryShell"
+            class="select-shell"
+            :class="{ 'is-open': isCategoryOpen }"
+            @click.self="toggleCategory"
+          >
+            <button
+              id="category-select"
+              type="button"
+              class="select-input select-trigger"
+              :aria-expanded="isCategoryOpen ? 'true' : 'false'"
+              aria-haspopup="listbox"
+              @click="toggleCategory"
+            >
+              <span class="select-text">{{ categoryLabel }}</span>
+            </button>
+            <ul
+              v-if="isCategoryOpen"
+              class="select-menu"
+              role="listbox"
+              aria-labelledby="category-select"
+            >
+              <li>
+                <button
+                  type="button"
+                  class="select-option"
+                  :class="{ selected: category === 'all' }"
+                  @click="selectCategory('all')"
+                >
+                  Todas as categorias
+                </button>
+              </li>
+              <li v-for="cat in productStore.categories" :key="cat">
+                <button
+                  type="button"
+                  class="select-option"
+                  :class="{ selected: category === cat }"
+                  @click="selectCategory(cat)"
+                >
+                  {{ cat }}
+                </button>
+              </li>
+            </ul>
           </div>
         </div>
         <div class="filter-block">
-          <div class="select-shell sort-shell">
-            <select id="sort-select" v-model="sortKey" class="select-input">
-              <option value="best-rated">Melhor avaliados</option>
-              <option value="price-asc">Preço: menor para maior</option>
-              <option value="price-desc">Preço: maior para menor</option>
-            </select>
+          <div
+            ref="sortShell"
+            class="select-shell sort-shell"
+            :class="{ 'is-open': isSortOpen }"
+            @click.self="toggleSort"
+          >
+            <button
+              id="sort-select"
+              type="button"
+              class="select-input select-trigger"
+              :aria-expanded="isSortOpen ? 'true' : 'false'"
+              aria-haspopup="listbox"
+              @click="toggleSort"
+            >
+              <span class="select-text">{{ sortLabel }}</span>
+            </button>
+            <ul v-if="isSortOpen" class="select-menu" role="listbox" aria-labelledby="sort-select">
+              <li>
+                <button
+                  type="button"
+                  class="select-option"
+                  :class="{ selected: sortKey === 'best-rated' }"
+                  @click="selectSort('best-rated')"
+                >
+                  Melhores avaliações
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  class="select-option"
+                  :class="{ selected: sortKey === 'price-asc' }"
+                  @click="selectSort('price-asc')"
+                >
+                  Preço menor para o maior
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  class="select-option"
+                  :class="{ selected: sortKey === 'price-desc' }"
+                  @click="selectSort('price-desc')"
+                >
+                  Preço maior para o menor
+                </button>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -207,7 +341,7 @@ const goToPage = (n: number) => productStore.setPage(n - 1)
   max-width: 420px;
 }
 .filter-block {
-  flex: 0 0 180px;
+  flex: 0 0 220px;
 }
 .search-shell {
   display: flex;
@@ -274,11 +408,34 @@ const goToPage = (n: number) => productStore.setPage(n - 1)
   outline: none;
 }
 .select-shell {
-  padding: 4px 10px;
+  position: relative;
+  padding: 15px 15px;
   border-radius: 999px;
   background: #fff;
   border: 1px solid var(--color-border);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.select-shell::after {
+  content: '';
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  width: 8px;
+  height: 5px;
+  margin-top: -2.5px;
+  pointer-events: none;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid #111;
+}
+.select-shell.is-open::after {
+  transform: rotate(180deg);
+}
+.select-shell.is-open {
+  background: #f3f4f6;
+  border-color: #111;
 }
 .sort-shell {
   position: relative;
@@ -291,15 +448,66 @@ const goToPage = (n: number) => productStore.setPage(n - 1)
 .select-shell:focus-within {
   border-color: #111;
   box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.3);
+  background: #fff;
+}
+.select-trigger {
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.select-text {
+  display: block;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .select-input {
   padding-left: 0;
-  padding-right: 0;
+  padding-right: 26px;
 }
-.select-shell:focus-within {
-  border-color: #111;
-  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.3);
+.select-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: -1px;
+  right: -1px;
   background: #fff;
+  border-radius: 16px;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 10px 32px rgba(15, 23, 42, 0.18);
+  padding: 0;
+  margin: 0;
+  z-index: 20;
+}
+.select-menu li {
+  list-style: none;
+}
+.select-option {
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 14px;
+  cursor: pointer;
+}
+.select-menu li:first-child .select-option {
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+.select-menu li:last-child .select-option {
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+.select-option:hover,
+.select-option.selected {
+  background: #f3f4f6;
+  color: #111;
 }
 .loading {
   display: flex;
