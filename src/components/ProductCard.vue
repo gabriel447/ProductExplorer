@@ -17,6 +17,15 @@ defineProps<{ product: Product }>()
     <div class="info">
       <span class="category">{{ product.category }}</span>
       <h3 class="title" :title="product.title">{{ product.title }}</h3>
+      <div class="rating">
+        <span class="stars">
+          {{ '★'.repeat(Math.round(product.rating.rate)).slice(0, 5) }}
+          <span class="stars-empty">
+            {{ '☆'.repeat(5 - Math.round(product.rating.rate)) }}
+          </span>
+        </span>
+        <span class="rating-count">({{ product.rating.count }})</span>
+      </div>
       <div class="price">R$ {{ product.price.toFixed(2) }}</div>
     </div>
   </RouterLink>
@@ -79,6 +88,22 @@ defineProps<{ product: Product }>()
   text-overflow: ellipsis;
   font-size: var(--font-card-title-size);
   line-height: var(--line-tight);
+}
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.stars {
+  color: #fbbf24;
+  font-size: 14px;
+}
+.stars-empty {
+  color: #d1d5db;
+}
+.rating-count {
+  font-size: 12px;
+  color: #6b7280;
 }
 .price {
   font-size: var(--font-card-price-size);

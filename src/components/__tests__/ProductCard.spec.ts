@@ -36,6 +36,10 @@ describe('ProductCard', () => {
     expect(titleEl.text()).toBe(product.title)
     expect(titleEl.attributes('title')).toBe(product.title)
 
+    const starsText = wrapper.get('.stars').text()
+    expect(starsText.includes('★')).toBe(true)
+    expect(wrapper.get('.rating-count').text()).toBe(`(${product.rating.count})`)
+
     expect(wrapper.get('.price').text()).toBe(`R$ ${product.price.toFixed(2)}`)
   })
 

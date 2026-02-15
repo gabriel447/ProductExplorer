@@ -12,7 +12,6 @@ const formatBRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 
 const product = ref<Product | null>(null)
 const isLoading = ref(false)
 const error = ref<string | null>(null)
-const liked = ref(false)
 
 onMounted(async () => {
   isLoading.value = true
@@ -71,21 +70,6 @@ onMounted(async () => {
             fill="none"
             stroke-linecap="round"
             stroke-linejoin="round"
-          />
-        </svg>
-      </button>
-
-      <button
-        class="heart-btn heart-top"
-        :class="{ liked: liked }"
-        :aria-pressed="liked ? 'true' : 'false'"
-        aria-label="Curtir"
-        @click="liked = !liked"
-      >
-        <svg class="heart-icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path
-            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 6 4 4 6.5 4c1.74 0 3.5 1.02 4.5 2.5C12 5.02 13.76 4 15.5 4 18 4 20 6 20 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-            fill="currentColor"
           />
         </svg>
       </button>
@@ -215,35 +199,6 @@ onMounted(async () => {
   font-size: 15px;
   line-height: 1.6;
 }
-.heart-btn {
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid var(--color-border);
-  padding: 6px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-  color: #6b7280;
-  box-sizing: border-box;
-  line-height: 0;
-}
-.heart-btn:focus-visible {
-  outline: 3px solid #fca5a5;
-  outline-offset: 2px;
-  border-radius: 50%;
-}
-.heart-icon {
-  width: 20px;
-  height: 20px;
-  display: block;
-}
-.heart-btn.liked {
-  color: #ef4444;
-}
 .back-arrow {
   position: absolute;
   left: 12px;
@@ -258,11 +213,6 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-}
-.heart-top {
-  position: absolute;
-  right: 12px;
-  top: 12px;
 }
 .back-arrow:focus-visible {
   outline: 3px solid #93c5fd;
@@ -302,15 +252,6 @@ onMounted(async () => {
     top: 8px;
     width: 40px;
     height: 40px;
-  }
-  .heart-top {
-    right: 8px;
-    top: 8px;
-  }
-  .heart-btn {
-    width: 40px;
-    height: 40px;
-    padding: 8px;
   }
   .arrow-icon {
     width: 22px;

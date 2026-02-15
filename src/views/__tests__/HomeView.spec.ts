@@ -8,6 +8,8 @@ const hoisted = vi.hoisted(() => ({
   state: {
     isLoading: false as boolean,
     error: null as string | null,
+    page: 0 as number,
+    totalPages: 1 as number,
     displayedProducts: [] as Array<{
       id: number
       title: string
@@ -22,9 +24,21 @@ vi.mock('@/stores/productStore', () => ({
   useProductStore: () => ({
     isLoading: hoisted.state.isLoading,
     error: hoisted.state.error,
+    page: hoisted.state.page,
+    totalPages: hoisted.state.totalPages,
+    filteredProducts: hoisted.state.displayedProducts,
     displayedProducts: hoisted.state.displayedProducts,
+    selectedCategory: 'all',
+    sortKey: 'best-rated',
+    categories: [],
     setLimit: hoisted.setLimitMock,
     fetchProducts: hoisted.fetchMock,
+    setSearchTerm: vi.fn(),
+    setCategory: vi.fn(),
+    setSortKey: vi.fn(),
+    setPage: vi.fn(),
+    nextPage: vi.fn(),
+    prevPage: vi.fn(),
   }),
 }))
 
@@ -34,6 +48,8 @@ describe('HomeView', () => {
     hoisted.fetchMock.mockReset()
     hoisted.state.isLoading = false
     hoisted.state.error = null
+    hoisted.state.page = 0
+    hoisted.state.totalPages = 1
     hoisted.state.displayedProducts = []
   })
 
