@@ -1,9 +1,9 @@
 <script setup lang="ts">
 // Modal de carrinho
-// Responsabilidades: listar itens do carrinho, total e fechar modal
+// Responsabilidades: exibir itens, totais e ações de limpar/fechar
 import CartInfo from '@/components/CartInfo.vue'
 import type { CartItem } from '@/stores/cartStore'
-
+import { useCartStore } from '@/stores/cartStore'
 defineProps<{
   items: CartItem[]
   totalItems: number
@@ -15,6 +15,7 @@ defineEmits<{
 }>()
 
 const formatBRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
+const cartStore = useCartStore()
 </script>
 
 <template>
@@ -26,6 +27,14 @@ const formatBRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 
           <span class="cart-subtitle">
             {{ totalItems }} item{{ totalItems === 1 ? '' : 's' }}
           </span>
+          <button
+            v-if="items.length"
+            type="button"
+            class="cart-clear-btn"
+            @click="cartStore.clearCart()"
+          >
+            Limpar tudo
+          </button>
         </div>
       </div>
 

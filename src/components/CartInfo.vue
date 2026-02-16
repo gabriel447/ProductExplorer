@@ -20,6 +20,16 @@ const formatBRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 
 <template>
   <li class="cart-item">
     <div class="cart-item-row">
+      <div class="cart-thumb-wrap">
+        <RouterLink
+          :to="`/produto/${item.product.id}`"
+          class="cart-thumb-link"
+          :title="item.product.title"
+          @click="$emit('close-cart')"
+        >
+          <img :src="item.product.image" :alt="item.product.title" class="cart-thumb" />
+        </RouterLink>
+      </div>
       <RouterLink
         :to="`/produto/${item.product.id}`"
         class="cart-item-title"

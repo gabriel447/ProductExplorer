@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// Componente raiz da aplicação
+// Responsabilidades: definir layout base e encaixar as rotas
 import { RouterView } from 'vue-router'
 </script>
 

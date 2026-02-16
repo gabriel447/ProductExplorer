@@ -107,7 +107,6 @@ const cartStore = useCartStore()
   position: relative;
   max-width: 720px;
   margin: 0 auto;
-  margin-top: 30px;
 }
 .panel-actions {
   position: absolute;
@@ -256,9 +255,6 @@ const cartStore = useCartStore()
   }
 }
 @media (max-width: 480px) {
-  .panel {
-    padding: 14px;
-  }
   .description {
     font-size: 14px;
     -webkit-line-clamp: 5;

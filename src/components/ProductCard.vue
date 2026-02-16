@@ -3,7 +3,15 @@
 // Responsabilidades: renderizar resumo clicável com navegação para detalhes
 import { RouterLink } from 'vue-router'
 import type { Product } from '@/types/Product'
-defineProps<{ product: Product }>()
+import { useCartStore } from '@/stores/cartStore'
+const props = defineProps<{ product: Product }>()
+const emit = defineEmits<{ (e: 'added'): void }>()
+const cartStore = useCartStore()
+
+const handleAdd = () => {
+  cartStore.addProduct(props.product)
+  emit('added')
+}
 </script>
 
 <template>
@@ -30,28 +38,31 @@ defineProps<{ product: Product }>()
       </div>
       <div class="price">R$ {{ product.price.toFixed(2) }}</div>
     </div>
+    <button
+      type="button"
+      class="add-btn"
+      aria-label="Adicionar ao carrinho"
+      @click.prevent.stop="handleAdd"
+    >
+      <span class="add-icon" aria-hidden="true">+</span>
+    </button>
   </RouterLink>
 </template>
 
 <style scoped>
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--color-border);
   border-radius: 12px;
   background: var(--color-background-soft);
   overflow: hidden;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
   height: 100%;
   text-decoration: none;
   color: inherit;
   padding: 0;
-}
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  -webkit-tap-highlight-color: transparent;
 }
 .card:focus-visible {
   outline: 3px solid #2563eb;
@@ -69,6 +80,61 @@ defineProps<{ product: Product }>()
   height: 220px;
   max-width: 100%;
   object-fit: contain;
+}
+.add-btn {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #111;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.1s ease;
+}
+.add-btn:active {
+  background: #000;
+  border-color: #000;
+  color: #fff;
+  transform: scale(0.97);
+}
+.add-btn:focus-visible {
+  outline: 2px solid #111;
+  outline-offset: 2px;
+}
+.add-icon {
+  font-size: 20px;
+  line-height: 1;
+  color: inherit;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card {
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+  .add-btn:hover {
+    background: #111;
+    border-color: #111;
+    color: #fff;
+    transform: scale(1.03);
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
 }
 .info {
   display: grid;
@@ -122,6 +188,12 @@ defineProps<{ product: Product }>()
     width: 100%;
     height: 240px;
     object-fit: contain;
+  }
+  .add-btn {
+    right: 10px;
+    bottom: 10px;
+    width: 38px;
+    height: 38px;
   }
   .info {
     padding: 10px 12px;

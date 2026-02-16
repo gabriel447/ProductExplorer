@@ -7,6 +7,7 @@ import { useCartStore } from '@/stores/cartStore'
 import ProductCard from '@/components/ProductCard.vue'
 import CartButton from '@/components/CartButton.vue'
 import CartModal from '@/components/CartModal.vue'
+import NotFoundView from '@/views/NotFoundView.vue'
 
 const productStore = useProductStore()
 const cartStore = useCartStore()
@@ -26,6 +27,8 @@ const sortKey = computed({
 const isCategoryOpen = ref(false)
 const isSortOpen = ref(false)
 const isCartOpen = ref(false)
+const showAddSuccess = ref(false)
+let addSuccessTimeout: ReturnType<typeof setTimeout> | undefined
 
 const categoryShell = ref<HTMLElement | null>(null)
 const sortShell = ref<HTMLElement | null>(null)
@@ -89,6 +92,9 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.removeEventListener('click', handleClickOutside)
+  if (addSuccessTimeout) {
+    clearTimeout(addSuccessTimeout)
+  }
 })
 
 let searchTimeout: ReturnType<typeof setTimeout> | undefined
@@ -132,17 +138,39 @@ const goToPage = (n: number) => {
 const toggleCart = () => {
   isCartOpen.value = !isCartOpen.value
 }
+
+const handleProductAdded = () => {
+  if (addSuccessTimeout) {
+    clearTimeout(addSuccessTimeout)
+  }
+  showAddSuccess.value = true
+  addSuccessTimeout = setTimeout(() => {
+    showAddSuccess.value = false
+  }, 2200)
+}
 </script>
 
 <template>
   <section class="catalog">
+    <transition name="toast-fade">
+      <div
+        v-if="showAddSuccess"
+        class="toast toast-success"
+        role="status"
+        aria-live="polite"
+      >
+        Produto adicionado com sucesso!
+      </div>
+    </transition>
     <div v-if="productStore.isLoading" class="loading">
       <div class="spinner" aria-label="Carregando"></div>
     </div>
 
-    <div v-else-if="productStore.error" class="error-only" role="status" aria-live="polite">
-      <h1 class="error-title">Não foi possível carregar os produtos.</h1>
-    </div>
+    <NotFoundView
+      v-else-if="productStore.error"
+      title="Não foi possível carregar os produtos."
+      description="Tente recarregar a página ou voltar mais tarde."
+    />
 
     <div v-else>
       <div class="toolbar" aria-label="Filtros de catálogo">
@@ -328,6 +356,7 @@ const toggleCart = () => {
           v-for="product in productStore.displayedProducts"
           :key="product.id"
           :product="product"
+          @added="handleProductAdded"
         />
       </div>
       <nav class="pagination" aria-label="Paginação">

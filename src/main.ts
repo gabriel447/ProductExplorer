@@ -1,3 +1,5 @@
+// Ponto de entrada da aplicação
+// Responsabilidades: criar app Vue, registrar Pinia e router e montar na DOM
 import './assets/main.css'
 
 import { createApp } from 'vue'
