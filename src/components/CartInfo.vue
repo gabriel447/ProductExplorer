@@ -1,6 +1,4 @@
 <script setup lang="ts">
-// Linha de informação do carrinho
-// Responsabilidades: mostrar título, quantidade, remover e total por item
 import { RouterLink } from 'vue-router'
 import { useCartStore } from '@/stores/cartStore'
 import type { CartItem } from '@/stores/cartStore'

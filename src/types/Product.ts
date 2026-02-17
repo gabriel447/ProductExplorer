@@ -1,5 +1,3 @@
-// Tipos de domínio
-// Responsabilidades: definir interfaces de Product e Rating conforme API
 export interface Rating {
   rate: number
   count: number

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-// Componente de resumo de produto
-// Responsabilidades: exibir imagem, título e preço de um produto
 import type { Product } from '@/types/Product'
 defineProps<{ product: Product }>()
 </script>

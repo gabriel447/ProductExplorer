@@ -1,6 +1,4 @@
 <script setup lang="ts">
-// Componente raiz da aplicação
-// Responsabilidades: definir layout base e encaixar as rotas
 import { RouterView } from 'vue-router'
 </script>
 
@@ -13,6 +11,5 @@ import { RouterView } from 'vue-router'
 <style scoped>
 .app-main {
   width: 100%;
-  padding: 24px;
 }
 </style>

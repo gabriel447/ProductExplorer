@@ -1,6 +1,4 @@
 <script setup lang="ts">
-// Card de produto no catálogo
-// Responsabilidades: exibir resumo e adicionar ao carrinho a partir da lista
 import { RouterLink } from 'vue-router'
 import { ref } from 'vue'
 import type { Product } from '@/types/Product'

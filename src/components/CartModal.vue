@@ -1,6 +1,4 @@
 <script setup lang="ts">
-// Componente de modal de carrinho
-// Responsabilidades: exibir lista de itens, total e controles de fechamento
 import CartInfo from '@/components/CartInfo.vue'
 import type { CartItem } from '@/stores/cartStore'
 import { useCartStore } from '@/stores/cartStore'
@@ -24,32 +22,30 @@ let previousBodyTop: string | null = null
 let previousBodyWidth: string | null = null
 let lockedScrollY = 0
 
-const lockBodyScroll = () => {
-  if (typeof window === 'undefined' || typeof document === 'undefined') return
+const setBodyScrollLocked = (locked: boolean) => {
   const body = document.body
-  lockedScrollY = window.scrollY || window.pageYOffset || 0
-  previousBodyOverflow = body.style.overflow
-  previousBodyPosition = body.style.position
-  previousBodyTop = body.style.top
-  previousBodyWidth = body.style.width
-  body.style.overflow = 'hidden'
-  body.style.position = 'fixed'
-  body.style.top = `-${lockedScrollY}px`
-  body.style.width = '100%'
+
+  if (locked) {
+    lockedScrollY = window.scrollY || window.pageYOffset || 0
+    previousBodyOverflow = body.style.overflow
+    previousBodyPosition = body.style.position
+    previousBodyTop = body.style.top
+    previousBodyWidth = body.style.width
+    body.style.overflow = 'hidden'
+    body.style.position = 'fixed'
+    body.style.top = `-${lockedScrollY}px`
+    body.style.width = '100%'
+  } else {
+    body.style.overflow = previousBodyOverflow || ''
+    body.style.position = previousBodyPosition || ''
+    body.style.top = previousBodyTop || ''
+    body.style.width = previousBodyWidth || ''
+    window.scrollTo(0, lockedScrollY)
+  }
 }
 
-const unlockBodyScroll = () => {
-  if (typeof window === 'undefined' || typeof document === 'undefined') return
-  const body = document.body
-  body.style.overflow = previousBodyOverflow || ''
-  body.style.position = previousBodyPosition || ''
-  body.style.top = previousBodyTop || ''
-  body.style.width = previousBodyWidth || ''
-  window.scrollTo(0, lockedScrollY)
-}
-
-onMounted(lockBodyScroll)
-onBeforeUnmount(unlockBodyScroll)
+onMounted(() => setBodyScrollLocked(true))
+onBeforeUnmount(() => setBodyScrollLocked(false))
 </script>
 
 <template>

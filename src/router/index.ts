@@ -1,6 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-// Configuração de rotas
-// Responsabilidades: definir rotas, lazy loading e props dinâmicas
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

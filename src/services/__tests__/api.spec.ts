@@ -14,6 +14,7 @@ vi.mock('axios', () => {
 describe('api service', () => {
   beforeEach(() => {
     hoisted.getMock.mockReset()
+    ;(import.meta as { env: { VITE_API_URL?: string } }).env.VITE_API_URL = 'https://example.com'
   })
 
   it('getProducts chama /products e retorna dados', async () => {

@@ -1,4 +1,3 @@
-// Store de carrinho: gerencia itens, totais e persiste no localStorage
 import { defineStore } from 'pinia'
 import { ref, computed, watch } from 'vue'
 import type { Product } from '@/types/Product'
@@ -43,8 +42,7 @@ export const useCartStore = defineStore('cart', () => {
     if (typeof window === 'undefined') return
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(value))
-    } catch {
-    }
+    } catch {}
   }
 
   watch(
@@ -70,10 +68,7 @@ export const useCartStore = defineStore('cart', () => {
   }
 
   const updateQuantity = (productId: number, quantity: number) => {
-    const normalized = Math.min(
-      MAX_QUANTITY_PER_ITEM,
-      quantity < 1 ? 1 : Math.floor(quantity),
-    )
+    const normalized = Math.min(MAX_QUANTITY_PER_ITEM, quantity < 1 ? 1 : Math.floor(quantity))
     const item = items.value.find((entry) => entry.product.id === productId)
     if (!item) return
     item.quantity = normalized

@@ -1,5 +1,3 @@
-// Serviço de API (Axios)
-// Responsabilidades: consumir Fake Store API e expor funções de produtos
 import axios from 'axios'
 import type { Product } from '@/types/Product'
 
@@ -8,9 +6,8 @@ const api = axios.create({
   timeout: 8000,
 })
 
-const ensureConfigured = () => {
-  if (import.meta.env.MODE === 'test') return
-  const baseURL = (api as { defaults?: { baseURL?: string } }).defaults?.baseURL
+const validateUrl = () => {
+  const baseURL = import.meta.env.VITE_API_URL
   if (!baseURL) {
     const error = new Error('API não está configurada (VITE_API_URL ausente).')
     console.error(error)
@@ -20,7 +17,7 @@ const ensureConfigured = () => {
 
 export const getProducts = async (): Promise<Product[]> => {
   try {
-    ensureConfigured()
+    validateUrl()
     const response = await api.get<Product[]>('/products')
     return response.data
   } catch (error) {
@@ -30,7 +27,12 @@ export const getProducts = async (): Promise<Product[]> => {
 }
 
 export const getProductById = async (id: string): Promise<Product> => {
-  ensureConfigured()
-  const response = await api.get<Product>(`/products/${id}`)
-  return response.data
+  try {
+    validateUrl()
+    const response = await api.get<Product>(`/products/${id}`)
+    return response.data
+  } catch (error) {
+    console.error('Erro ao buscar produto por id:', error)
+    throw error
+  }
 }

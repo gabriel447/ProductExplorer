@@ -1,6 +1,4 @@
 <script setup lang="ts">
-// Componente de detalhes de produto
-// Responsabilidades: compor ProductSummary, exibir categoria, avaliação, descrição e ação
 import type { Product } from '@/types/Product'
 import { useCartStore } from '@/stores/cartStore'
 import ProductSummary from '@/components/ProductSummary.vue'

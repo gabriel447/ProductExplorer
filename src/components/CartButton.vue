@@ -1,6 +1,4 @@
 <script setup lang="ts">
-// Botão flutuante do carrinho
-// Responsabilidades: exibir atalho com badge de quantidade e emitir clique
 defineProps<{
   totalItems: number
   extraClass?: string

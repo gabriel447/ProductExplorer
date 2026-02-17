@@ -1,19 +1,70 @@
 <script setup lang="ts">
-// View de página não encontrada
-// Responsabilidades: exibir 404 reutilizável com título, descrição e link home
 import { RouterLink } from 'vue-router'
+import { computed } from 'vue'
+
+type NotFoundContext = 'home-load-error' | 'product-not-found' | 'route-not-found'
+
 const props = withDefaults(
   defineProps<{
+    context?: NotFoundContext
     title?: string
     description?: string
     showHomeButton?: boolean
+    actionLabel?: string
   }>(),
   {
-    title: 'Oops! Esta página não pode ser encontrada!',
+    context: 'route-not-found',
+    title: '',
     description: '',
-    showHomeButton: true,
+    showHomeButton: undefined,
+    actionLabel: '',
   },
 )
+
+const emit = defineEmits<{
+  (e: 'action'): void
+}>()
+
+const notFoundMessagesByContext: Record<
+  NotFoundContext,
+  { title: string; description: string; actionLabel: string; showHomeButton: boolean }
+> = {
+  'home-load-error': {
+    title: 'Não foi possível carregar os produtos.',
+    description: 'Tente recarregar a página ou voltar mais tarde.',
+    actionLabel: '',
+    showHomeButton: false,
+  },
+  'product-not-found': {
+    title: 'Produto não encontrado',
+    description: 'Não encontramos este produto. Ele pode não existir mais.',
+    actionLabel: '',
+    showHomeButton: true,
+  },
+  'route-not-found': {
+    title: 'Oops! Esta página não pode ser encontrada!',
+    description: '',
+    actionLabel: '',
+    showHomeButton: true,
+  },
+}
+
+const notFoundViewModel = computed(() => {
+  const context = props.context ?? 'route-not-found'
+  const base = notFoundMessagesByContext[context]
+
+  return {
+    title: props.title || base.title,
+    description: props.description || base.description,
+    actionLabel: props.actionLabel || base.actionLabel,
+    showHomeButton:
+      typeof props.showHomeButton === 'boolean' ? props.showHomeButton : base.showHomeButton,
+  }
+})
+
+const handlePrimaryActionClick = () => {
+  emit('action')
+}
 </script>
 
 <template>
@@ -21,18 +72,26 @@ const props = withDefaults(
     <div class="notfound-inner">
       <div class="notfound-code">404 :(</div>
       <p class="notfound-title">
-        {{ props.title }}
+        {{ notFoundViewModel.title }}
       </p>
-      <p v-if="props.description" class="notfound-description">
-        {{ props.description }}
+      <p v-if="notFoundViewModel.description" class="notfound-description">
+        {{ notFoundViewModel.description }}
       </p>
+      <button
+        v-if="notFoundViewModel.actionLabel"
+        type="button"
+        class="notfound-home-btn"
+        @click="handlePrimaryActionClick"
+      >
+        <span>{{ notFoundViewModel.actionLabel }}</span>
+      </button>
       <RouterLink
-        v-if="props.showHomeButton"
+        v-else-if="notFoundViewModel.showHomeButton"
         to="/"
         class="notfound-home-btn"
         aria-label="Voltar para a página inicial"
       >
-        Voltar
+        <span>Voltar</span>
       </RouterLink>
     </div>
   </section>
@@ -78,6 +137,7 @@ const props = withDefaults(
   font-size: 15px;
   text-decoration: none;
   cursor: pointer;
+  gap: 8px;
 }
 .notfound-home-btn:hover {
   background: #000;

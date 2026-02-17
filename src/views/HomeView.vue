@@ -1,6 +1,4 @@
 <script setup lang="ts">
-// View de catálogo (Home)
-// Responsabilidades: orquestrar busca, filtros, ordenação, paginação e exibir cards
 import { onMounted, onBeforeUnmount, computed, ref, watch } from 'vue'
 import { useProductStore } from '@/stores/productStore'
 import { useCartStore } from '@/stores/cartStore'
@@ -9,93 +7,105 @@ import CartButton from '@/components/CartButton.vue'
 import CartModal from '@/components/CartModal.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 
+const searchInput = ref('')
 const productStore = useProductStore()
 const cartStore = useCartStore()
-
-const searchInput = ref('')
 
 const category = computed({
   get: () => productStore.selectedCategory,
   set: (value: string) => productStore.setCategory(value),
 })
 
-const sortKey = computed({
-  get: () => productStore.sortKey,
-  set: (value: 'price-asc' | 'price-desc' | 'best-rated') => productStore.setSortKey(value),
+const filter = computed({
+  get: () => productStore.selectedFilter,
+  set: (value: 'price-asc' | 'price-desc' | 'best-rated') => productStore.setFilter(value),
 })
 
 const isCategoryOpen = ref(false)
-const isSortOpen = ref(false)
+const isFilterOpen = ref(false)
 const isCartOpen = ref(false)
 const showAddSuccess = ref(false)
+
 let addSuccessTimeout: ReturnType<typeof setTimeout> | undefined
 
 const categoryShell = ref<HTMLElement | null>(null)
-const sortShell = ref<HTMLElement | null>(null)
+const filterShell = ref<HTMLElement | null>(null)
 
-const formatCategory = (value: string | undefined) =>
-  (value ?? '')
-    .split(' ')
-    .map((word) => (word ? word.charAt(0).toUpperCase() + word.slice(1) : ''))
-    .join(' ')
+const changeFirstToUpper = (value: string | undefined) => {
+  if (!value) return ''
+  const words = value.split(' ')
+  const formatted: string[] = []
+
+  for (const word of words) {
+    if (!word) {
+      formatted.push('')
+      continue
+    }
+    const first = word.charAt(0).toUpperCase()
+    const rest = word.slice(1)
+    formatted.push(first + rest)
+  }
+
+  return formatted.join(' ')
+}
 
 const categoryLabel = computed(() =>
-  category.value === 'all' ? 'Todas as categorias' : formatCategory(category.value),
+  category.value === 'all' ? 'Todas as categorias' : changeFirstToUpper(category.value),
 )
 
-const sortLabel = computed(() => {
-  if (sortKey.value === 'price-asc') return 'Preço menor para maior'
-  if (sortKey.value === 'price-desc') return 'Preço maior para menor'
+const filterLabel = computed(() => {
+  if (filter.value === 'price-asc') return 'Preço menor para maior'
+  if (filter.value === 'price-desc') return 'Preço maior para menor'
   return 'Melhores avaliações'
 })
 
+const toggleDropdown = (target: typeof isCategoryOpen, other: typeof isFilterOpen) => {
+  const willOpen = !target.value
+  target.value = willOpen
+  if (willOpen) {
+    other.value = false
+  }
+}
+
 const toggleCategory = () => {
-  const willOpen = !isCategoryOpen.value
-  isCategoryOpen.value = willOpen
-  if (willOpen) {
-    isSortOpen.value = false
-  }
+  toggleDropdown(isCategoryOpen, isFilterOpen)
 }
 
-const toggleSort = () => {
-  const willOpen = !isSortOpen.value
-  isSortOpen.value = willOpen
-  if (willOpen) {
-    isCategoryOpen.value = false
-  }
+const toggleFilter = () => {
+  toggleDropdown(isFilterOpen, isCategoryOpen)
 }
 
-const selectCategory = (value: string) => {
+const setCategory = (value: string) => {
   category.value = value
   isCategoryOpen.value = false
 }
 
-const selectSort = (value: 'price-asc' | 'price-desc' | 'best-rated') => {
-  sortKey.value = value
-  isSortOpen.value = false
+const setFilter = (value: 'price-asc' | 'price-desc' | 'best-rated') => {
+  filter.value = value
+  isFilterOpen.value = false
 }
 
-const handleClickOutside = (event: MouseEvent) => {
+const closeOnClickOutside = (event: MouseEvent) => {
   const target = event.target as Node | null
   if (!target) return
   const insideCategory = categoryShell.value?.contains(target)
-  const insideSort = sortShell.value?.contains(target)
+  const insideSort = filterShell.value?.contains(target)
   if (!insideCategory) {
     isCategoryOpen.value = false
   }
   if (!insideSort) {
-    isSortOpen.value = false
+    isFilterOpen.value = false
   }
 }
 
 onMounted(() => {
   productStore.setLimit(12)
   productStore.fetchProducts()
-  window.addEventListener('click', handleClickOutside)
+  window.addEventListener('click', closeOnClickOutside)
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener('click', handleClickOutside)
+  window.removeEventListener('click', closeOnClickOutside)
   if (addSuccessTimeout) {
     clearTimeout(addSuccessTimeout)
   }
@@ -117,33 +127,51 @@ const clearSearch = () => {
   productStore.setSearchTerm('')
 }
 
-const pages = computed(() => {
-  const total = productStore.totalPages
-  const current = productStore.page + 1
-  const items: Array<number | string> = []
-  if (total <= 5) {
-    for (let i = 1; i <= total; i++) items.push(i)
-    return items
+const pagination = computed(() => {
+  const totalPages = productStore.totalPages
+  const currentPage = productStore.page + 1
+  const result: Array<number | string> = []
+
+  if (totalPages <= 5) {
+    for (let page = 1; page <= totalPages; page += 1) {
+      result.push(page)
+    }
+    return result
   }
-  items.push(1)
-  if (current > 3) items.push('...')
-  const start = Math.max(2, current - 1)
-  const end = Math.min(total - 1, current + 1)
-  for (let i = start; i <= end; i++) items.push(i)
-  if (current < total - 2) items.push('...')
-  items.push(total)
-  return items
+
+  result.push(1)
+
+  const hasLeftDots = currentPage > 3
+  if (hasLeftDots) {
+    result.push('...')
+  }
+
+  const middleStart = Math.max(2, currentPage - 1)
+  const middleEnd = Math.min(totalPages - 1, currentPage + 1)
+
+  for (let page = middleStart; page <= middleEnd; page += 1) {
+    result.push(page)
+  }
+
+  const hasRightDots = currentPage < totalPages - 2
+  if (hasRightDots) {
+    result.push('...')
+  }
+
+  result.push(totalPages)
+
+  return result
 })
 
-const goToPage = (n: number) => {
+const changePage = (n: number) => {
   productStore.setPage(n - 1)
 }
 
-const toggleCart = () => {
+const toggleCartModal = () => {
   isCartOpen.value = !isCartOpen.value
 }
 
-const handleProductAdded = () => {
+const showAddSuccessMessage = () => {
   if (addSuccessTimeout) {
     clearTimeout(addSuccessTimeout)
   }
@@ -165,11 +193,7 @@ const handleProductAdded = () => {
       <div class="spinner" aria-label="Carregando"></div>
     </div>
 
-    <NotFoundView
-      v-else-if="productStore.error"
-      title="Não foi possível carregar os produtos."
-      description="Tente recarregar a página ou voltar mais tarde."
-    />
+    <NotFoundView v-else-if="productStore.error" context="home-load-error" />
 
     <div v-else>
       <div class="toolbar" aria-label="Filtros de catálogo">
@@ -238,7 +262,7 @@ const handleProductAdded = () => {
                     type="button"
                     class="select-option"
                     :class="{ selected: category === 'all' }"
-                    @click="selectCategory('all')"
+                    @click="setCategory('all')"
                   >
                     Todas as categorias
                   </button>
@@ -248,9 +272,9 @@ const handleProductAdded = () => {
                     type="button"
                     class="select-option"
                     :class="{ selected: category === cat }"
-                    @click="selectCategory(cat)"
+                    @click="setCategory(cat)"
                   >
-                    {{ formatCategory(cat) }}
+                    {{ changeFirstToUpper(cat) }}
                   </button>
                 </li>
               </ul>
@@ -258,33 +282,33 @@ const handleProductAdded = () => {
           </div>
           <div class="filter-block">
             <div
-              ref="sortShell"
-              class="select-shell sort-shell"
-              :class="{ 'is-open': isSortOpen }"
-              @click.self="toggleSort"
+              ref="filterShell"
+              class="select-shell filter-shell"
+              :class="{ 'is-open': isFilterOpen }"
+              @click.self="toggleFilter"
             >
               <button
-                id="sort-select"
+                id="filter-select"
                 type="button"
                 class="select-input select-trigger"
-                :aria-expanded="isSortOpen ? 'true' : 'false'"
+                :aria-expanded="isFilterOpen ? 'true' : 'false'"
                 aria-haspopup="listbox"
-                @click="toggleSort"
+                @click="toggleFilter"
               >
-                <span class="select-text">{{ sortLabel }}</span>
+                <span class="select-text">{{ filterLabel }}</span>
               </button>
               <ul
-                v-if="isSortOpen"
+                v-if="isFilterOpen"
                 class="select-menu"
                 role="listbox"
-                aria-labelledby="sort-select"
+                aria-labelledby="filter-select"
               >
                 <li>
                   <button
                     type="button"
                     class="select-option"
-                    :class="{ selected: sortKey === 'best-rated' }"
-                    @click="selectSort('best-rated')"
+                    :class="{ selected: filter === 'best-rated' }"
+                    @click="setFilter('best-rated')"
                   >
                     Melhores avaliações
                   </button>
@@ -293,8 +317,8 @@ const handleProductAdded = () => {
                   <button
                     type="button"
                     class="select-option"
-                    :class="{ selected: sortKey === 'price-asc' }"
-                    @click="selectSort('price-asc')"
+                    :class="{ selected: filter === 'price-asc' }"
+                    @click="setFilter('price-asc')"
                   >
                     Preço menor para maior
                   </button>
@@ -303,8 +327,8 @@ const handleProductAdded = () => {
                   <button
                     type="button"
                     class="select-option"
-                    :class="{ selected: sortKey === 'price-desc' }"
-                    @click="selectSort('price-desc')"
+                    :class="{ selected: filter === 'price-desc' }"
+                    @click="setFilter('price-desc')"
                   >
                     Preço maior para menor
                   </button>
@@ -317,7 +341,7 @@ const handleProductAdded = () => {
           type="button"
           class="cart-trigger"
           :class="{ 'has-items': cartStore.totalItems }"
-          @click="toggleCart"
+          @click="toggleCartModal"
           aria-label="Abrir carrinho de compras"
         >
           <svg viewBox="0 0 24 24" class="cart-icon" aria-hidden="true">
@@ -338,24 +362,24 @@ const handleProductAdded = () => {
         </button>
       </div>
       <CartModal
-        v-if="isCartOpen"
+        v-if="isCartOpen && !productStore.error"
         :items="cartStore.items"
         :total-items="cartStore.totalItems"
         :total-price="cartStore.totalPrice"
         @close="isCartOpen = false"
       />
       <CartButton
-        v-if="!isCartOpen"
+        v-if="!isCartOpen && !productStore.error"
         :total-items="cartStore.totalItems"
         extra-class="home-floating-cart"
-        @click="toggleCart"
+        @click="toggleCartModal"
       />
       <div class="products-grid">
         <ProductCard
           v-for="product in productStore.displayedProducts"
           :key="product.id"
           :product="product"
-          @added="handleProductAdded"
+          @added="showAddSuccessMessage"
         />
       </div>
       <nav class="pagination" aria-label="Paginação">
@@ -377,12 +401,12 @@ const handleProductAdded = () => {
           </svg>
         </button>
         <ul class="pages">
-          <li v-for="item in pages" :key="String(item)">
+          <li v-for="item in pagination" :key="String(item)">
             <button
               v-if="item !== '...'"
               class="page-item"
               :class="{ current: item === productStore.page + 1 }"
-              @click="goToPage(item as number)"
+              @click="changePage(item as number)"
               :aria-current="item === productStore.page + 1 ? 'page' : undefined"
             >
               {{ item }}
@@ -416,7 +440,7 @@ const handleProductAdded = () => {
 .catalog {
   width: 100%;
   margin: 0 auto;
-  padding: 8px 24px 20px;
+  padding: 32px 48px 44px;
 }
 .toolbar {
   display: flex;
@@ -573,10 +597,10 @@ const handleProductAdded = () => {
   background: #f3f4f6;
   border-color: #111;
 }
-.sort-shell {
+.filter-shell {
   position: relative;
 }
-.sort-shell .select-input {
+.filter-shell .select-input {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -807,7 +831,7 @@ const handleProductAdded = () => {
 }
 @media (max-width: 640px) {
   .catalog {
-    padding: 0 16px 16px;
+    padding: 24px 40px 40px;
   }
   .toolbar {
     flex-direction: column;

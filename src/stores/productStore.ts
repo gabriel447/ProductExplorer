@@ -1,4 +1,3 @@
-// Store de produtos: gerencia catálogo, filtros, ordenação e paginação
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import type { Product } from '@/types/Product'
@@ -12,7 +11,7 @@ export const useProductStore = defineStore('product', () => {
   const page = ref(0)
   const searchTerm = ref('')
   const selectedCategory = ref('all')
-  const sortKey = ref<'price-asc' | 'price-desc' | 'best-rated'>('best-rated')
+  const selectedFilter = ref<'price-asc' | 'price-desc' | 'best-rated'>('best-rated')
 
   const categories = computed(() => {
     const set = new Set<string>()
@@ -36,11 +35,11 @@ export const useProductStore = defineStore('product', () => {
 
     const sorted = [...list]
 
-    if (sortKey.value === 'price-asc') {
+    if (selectedFilter.value === 'price-asc') {
       sorted.sort((a, b) => a.price - b.price)
-    } else if (sortKey.value === 'price-desc') {
+    } else if (selectedFilter.value === 'price-desc') {
       sorted.sort((a, b) => b.price - a.price)
-    } else if (sortKey.value === 'best-rated') {
+    } else if (selectedFilter.value === 'best-rated') {
       sorted.sort((a, b) => {
         const starsA = Math.round(a.rating.rate)
         const starsB = Math.round(b.rating.rate)
@@ -91,8 +90,8 @@ export const useProductStore = defineStore('product', () => {
     selectedCategory.value = value
     page.value = 0
   }
-  const setSortKey = (value: 'price-asc' | 'price-desc' | 'best-rated') => {
-    sortKey.value = value
+  const setFilter = (value: 'price-asc' | 'price-desc' | 'best-rated') => {
+    selectedFilter.value = value
     page.value = 0
   }
   const setPage = (value: number) => {
@@ -114,7 +113,7 @@ export const useProductStore = defineStore('product', () => {
     page,
     searchTerm,
     selectedCategory,
-    sortKey,
+    selectedFilter,
     categories,
     filteredProducts,
     totalPages,
@@ -123,7 +122,7 @@ export const useProductStore = defineStore('product', () => {
     setLimit,
     setSearchTerm,
     setCategory,
-    setSortKey,
+    setFilter,
     setPage,
     nextPage,
     prevPage,
