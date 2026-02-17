@@ -1,16 +1,21 @@
 <script setup lang="ts">
-// Card de catálogo
-// Responsabilidades: renderizar resumo clicável com navegação para detalhes
 import { RouterLink } from 'vue-router'
+import { ref } from 'vue'
 import type { Product } from '@/types/Product'
 import { useCartStore } from '@/stores/cartStore'
 const props = defineProps<{ product: Product }>()
 const emit = defineEmits<{ (e: 'added'): void }>()
 const cartStore = useCartStore()
+const isPressed = ref(false)
 
 const handleAdd = () => {
+  if (isPressed.value) return
+  isPressed.value = true
   cartStore.addProduct(props.product)
   emit('added')
+  window.setTimeout(() => {
+    isPressed.value = false
+  }, 160)
 }
 </script>
 
@@ -41,6 +46,7 @@ const handleAdd = () => {
     <button
       type="button"
       class="add-btn"
+      :class="{ 'is-pressed': isPressed }"
       aria-label="Adicionar ao carrinho"
       @click.prevent.stop="handleAdd"
     >
@@ -104,6 +110,12 @@ const handleAdd = () => {
     transform 0.1s ease;
 }
 .add-btn:active {
+  background: #000;
+  border-color: #000;
+  color: #fff;
+  transform: scale(0.97);
+}
+.add-btn.is-pressed {
   background: #000;
   border-color: #000;
   color: #fff;

@@ -288,6 +288,12 @@ a:visited {
 .cart-qty-btn:hover {
   background: #e5e7eb;
 }
+.cart-qty-btn:disabled {
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+  color: #9ca3af;
+  cursor: default;
+}
 .cart-qty {
   min-width: 24px;
   text-align: center;
@@ -312,6 +318,7 @@ a:visited {
   margin-left: auto;
   min-width: 90px;
   text-align: right;
+  white-space: nowrap;
 }
 .cart-summary {
   display: flex;
@@ -397,6 +404,7 @@ a:visited {
   padding: 0;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.25);
   z-index: 45;
+  color: #111;
 }
 .floating-back-icon {
   width: 22px;

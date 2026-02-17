@@ -9,6 +9,7 @@ export interface CartItem {
 }
 
 const STORAGE_KEY = 'productexplorer:cart'
+const MAX_QUANTITY_PER_ITEM = 9
 
 const loadInitialState = (): CartItem[] => {
   if (typeof window === 'undefined') return []
@@ -19,7 +20,10 @@ const loadInitialState = (): CartItem[] => {
     if (!Array.isArray(parsed)) return []
     return parsed.map((item) => ({
       product: item.product,
-      quantity: typeof item.quantity === 'number' && item.quantity > 0 ? item.quantity : 1,
+      quantity:
+        typeof item.quantity === 'number' && item.quantity > 0
+          ? Math.min(item.quantity, MAX_QUANTITY_PER_ITEM)
+          : 1,
     }))
   } catch {
     return []
@@ -54,6 +58,7 @@ export const useCartStore = defineStore('cart', () => {
   const addProduct = (product: Product) => {
     const existing = items.value.find((item) => item.product.id === product.id)
     if (existing) {
+      if (existing.quantity >= MAX_QUANTITY_PER_ITEM) return
       existing.quantity += 1
       return
     }
@@ -65,7 +70,10 @@ export const useCartStore = defineStore('cart', () => {
   }
 
   const updateQuantity = (productId: number, quantity: number) => {
-    const normalized = quantity < 1 ? 1 : Math.floor(quantity)
+    const normalized = Math.min(
+      MAX_QUANTITY_PER_ITEM,
+      quantity < 1 ? 1 : Math.floor(quantity),
+    )
     const item = items.value.find((entry) => entry.product.id === productId)
     if (!item) return
     item.quantity = normalized
@@ -74,6 +82,7 @@ export const useCartStore = defineStore('cart', () => {
   const increaseQuantity = (productId: number) => {
     const item = items.value.find((entry) => entry.product.id === productId)
     if (!item) return
+    if (item.quantity >= MAX_QUANTITY_PER_ITEM) return
     item.quantity += 1
   }
 

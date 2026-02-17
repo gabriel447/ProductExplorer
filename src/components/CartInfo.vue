@@ -53,6 +53,7 @@ const formatBRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 
         <button
           type="button"
           class="cart-qty-btn"
+          :disabled="item.quantity >= 9"
           @click="cartStore.increaseQuantity(item.product.id)"
           aria-label="Aumentar quantidade"
         >
