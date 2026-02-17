@@ -51,8 +51,7 @@ defineProps<{ product: Product }>()
   align-items: center;
   justify-content: center;
   padding: 16px;
-  height: 360px;
-  overflow: hidden;
+  min-height: 320px;
 }
 .image {
   display: block;
@@ -93,9 +92,8 @@ defineProps<{ product: Product }>()
     gap: 16px;
   }
   .image-wrap {
-    padding: 8px;
-    height: 300px;
-    overflow: hidden;
+    padding: 12px 8px 8px;
+    min-height: 260px;
   }
   .image {
     display: block;

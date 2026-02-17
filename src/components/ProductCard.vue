@@ -131,6 +131,16 @@ const handleAdd = () => {
   color: inherit;
 }
 
+@media (max-width: 480px) {
+  .image-wrap {
+    padding: 12px;
+    min-height: 220px;
+  }
+  .image {
+    height: 200px;
+  }
+}
+
 @media (hover: hover) and (pointer: fine) {
   .card {
     transition:

@@ -1,9 +1,8 @@
 <script setup lang="ts">
-// Modal de carrinho
-// Responsabilidades: exibir itens, totais e ações de limpar/fechar
 import CartInfo from '@/components/CartInfo.vue'
 import type { CartItem } from '@/stores/cartStore'
 import { useCartStore } from '@/stores/cartStore'
+import { onMounted, onBeforeUnmount } from 'vue'
 defineProps<{
   items: CartItem[]
   totalItems: number
@@ -16,6 +15,22 @@ defineEmits<{
 
 const formatBRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
 const cartStore = useCartStore()
+
+let previousBodyOverflow: string | null = null
+
+const lockBodyScroll = () => {
+  if (typeof document === 'undefined') return
+  previousBodyOverflow = document.body.style.overflow
+  document.body.style.overflow = 'hidden'
+}
+
+const unlockBodyScroll = () => {
+  if (typeof document === 'undefined') return
+  document.body.style.overflow = previousBodyOverflow || ''
+}
+
+onMounted(lockBodyScroll)
+onBeforeUnmount(unlockBodyScroll)
 </script>
 
 <template>
@@ -38,7 +53,7 @@ const cartStore = useCartStore()
         </div>
       </div>
 
-      <ul class="cart-list" :class="{ 'cart-list-scroll': items.length > 4 }" v-if="items.length">
+      <ul class="cart-list" :class="{ 'cart-list-scroll': items.length > 3 }" v-if="items.length">
         <CartInfo
           v-for="item in items"
           :key="item.product.id"
