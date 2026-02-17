@@ -18,7 +18,6 @@ const ensureConfigured = () => {
   }
 }
 
-// Função para buscar todos os produtos
 export const getProducts = async (): Promise<Product[]> => {
   try {
     ensureConfigured()
@@ -30,7 +29,6 @@ export const getProducts = async (): Promise<Product[]> => {
   }
 }
 
-// Função para buscar um produto único
 export const getProductById = async (id: string): Promise<Product> => {
   ensureConfigured()
   const response = await api.get<Product>(`/products/${id}`)
