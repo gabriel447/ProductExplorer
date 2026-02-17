@@ -8,6 +8,16 @@ Aplicação SPA em Vue 3 que consome uma API pública de produtos e implementa f
 npm install
 ```
 
+## Configuração de ambiente
+
+Crie um arquivo `.env` na raiz do projeto definindo a variável de ambiente utilizada pelo serviço de API:
+
+```bash
+VITE_API_URL=<sua_url_de_api>
+```
+
+Essa URL será usada tanto em desenvolvimento quanto em produção.
+
 ## Ambiente de desenvolvimento
 
 ```bash
@@ -65,3 +75,4 @@ As decisões abaixo resumem como os requisitos do desafio foram traduzidos em c�
 ## Deploy
 
 - Ambiente de produção (Vercel): https://product-explorer-rosy.vercel.app
+- Roteamento em produção: o projeto inclui um arquivo `vercel.json` na raiz que reescreve todas as rotas para `index.html`, garantindo que URLs como `/produto/:id` possam ser acessadas diretamente e compartilhadas sem gerar 404 da Vercel.
