@@ -6,7 +6,7 @@
   --vt-c-white: #ffffff;
   --vt-c-white-soft: #f8f8f8;
   --vt-c-white-mute: #f2f2f2;
-  --vt-c-indigo: #2c3e50;
+  --vt-c-indigo: #111827;
 
   --color-background: var(--vt-c-white);
   --color-background-soft: var(--vt-c-white-soft);
@@ -58,6 +58,15 @@ body {
   font-size: 15px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:visited {
+  color: inherit;
 }
 
 #app {
@@ -134,6 +143,11 @@ body {
   cursor: pointer;
   font-size: 20px;
   line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #111;
+  -webkit-tap-highlight-color: transparent;
 }
 .cart-modal-close:hover {
   background: rgba(0, 0, 0, 0.05);
@@ -332,6 +346,7 @@ body {
   padding: 0;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.25);
   z-index: 45;
+  color: #111;
 }
 .floating-cart.has-items {
   border-color: #ef4444;

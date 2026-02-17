@@ -153,12 +153,7 @@ const handleProductAdded = () => {
 <template>
   <section class="catalog">
     <transition name="toast-fade">
-      <div
-        v-if="showAddSuccess"
-        class="toast toast-success"
-        role="status"
-        aria-live="polite"
-      >
+      <div v-if="showAddSuccess" class="toast toast-success" role="status" aria-live="polite">
         Produto adicionado com sucesso!
       </div>
     </transition>
@@ -450,6 +445,7 @@ const handleProductAdded = () => {
   justify-content: center;
   cursor: pointer;
   padding: 0;
+  color: #111;
 }
 .cart-trigger.has-items {
   border-color: #ef4444;
@@ -602,6 +598,7 @@ const handleProductAdded = () => {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: #111;
 }
 .select-input {
   padding-left: 0;
@@ -631,6 +628,7 @@ const handleProductAdded = () => {
   text-align: left;
   font-size: 14px;
   cursor: pointer;
+  color: #111;
 }
 .select-menu li:first-child .select-option {
   border-top-left-radius: 16px;

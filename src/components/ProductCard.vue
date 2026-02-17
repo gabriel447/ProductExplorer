@@ -60,7 +60,7 @@ const handleAdd = () => {
   overflow: hidden;
   height: 100%;
   text-decoration: none;
-  color: inherit;
+  color: #111;
   padding: 0;
   -webkit-tap-highlight-color: transparent;
 }
