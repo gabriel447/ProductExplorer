@@ -209,14 +209,6 @@ onBeforeUnmount(() => {
     min-height: 70vh;
   }
 }
-.home-floating-cart {
-  display: none;
-}
-@media (max-width: 640px) {
-  .home-floating-cart {
-    display: inline-flex;
-  }
-}
 @media (max-width: 640px) {
   .details {
     padding: 16px 8px calc(env(safe-area-inset-bottom, 0px) + 90px);

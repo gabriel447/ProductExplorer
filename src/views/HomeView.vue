@@ -33,11 +33,6 @@ let addSuccessTimeout: ReturnType<typeof setTimeout> | undefined
 const categoryShell = ref<HTMLElement | null>(null)
 const sortShell = ref<HTMLElement | null>(null)
 
-const closeDropdowns = () => {
-  isCategoryOpen.value = false
-  isSortOpen.value = false
-}
-
 const formatCategory = (value: string | undefined) =>
   (value ?? '')
     .split(' ')
@@ -55,13 +50,19 @@ const sortLabel = computed(() => {
 })
 
 const toggleCategory = () => {
-  isCategoryOpen.value = !isCategoryOpen.value
-  if (isCategoryOpen.value) isSortOpen.value = false
+  const willOpen = !isCategoryOpen.value
+  isCategoryOpen.value = willOpen
+  if (willOpen) {
+    isSortOpen.value = false
+  }
 }
 
 const toggleSort = () => {
-  isSortOpen.value = !isSortOpen.value
-  if (isSortOpen.value) isCategoryOpen.value = false
+  const willOpen = !isSortOpen.value
+  isSortOpen.value = willOpen
+  if (willOpen) {
+    isCategoryOpen.value = false
+  }
 }
 
 const selectCategory = (value: string) => {
@@ -79,8 +80,11 @@ const handleClickOutside = (event: MouseEvent) => {
   if (!target) return
   const insideCategory = categoryShell.value?.contains(target)
   const insideSort = sortShell.value?.contains(target)
-  if (!insideCategory && !insideSort) {
-    closeDropdowns()
+  if (!insideCategory) {
+    isCategoryOpen.value = false
+  }
+  if (!insideSort) {
+    isSortOpen.value = false
   }
 }
 
@@ -771,6 +775,35 @@ const handleProductAdded = () => {
 .chev-icon {
   width: 18px;
   height: 18px;
+}
+@media (max-width: 1024px) and (min-width: 641px) {
+  .toolbar {
+    padding: 6px 0 18px;
+    gap: 8px;
+  }
+  .toolbar-left {
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 8px;
+    flex: 1 1 auto;
+  }
+  .search-block {
+    flex: 1 1 0;
+    max-width: 46%;
+  }
+  .filter-block {
+    flex: 0 0 180px;
+  }
+  .search-shell {
+    padding: 10px 12px;
+  }
+  .select-shell {
+    padding: 11px 13px;
+  }
+  .search-input,
+  .select-input {
+    font-size: 13px;
+  }
 }
 @media (max-width: 640px) {
   .catalog {
