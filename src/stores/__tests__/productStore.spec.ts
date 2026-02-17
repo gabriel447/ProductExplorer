@@ -1,3 +1,5 @@
+// Testes da store de produtos
+// Responsabilidades: validar filtros, ordenação, paginação e estados de carregamento/erro
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useProductStore } from '../productStore'

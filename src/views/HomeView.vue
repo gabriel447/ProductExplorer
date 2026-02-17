@@ -541,7 +541,7 @@ const handleProductAdded = () => {
   position: relative;
   display: flex;
   align-items: center;
-  padding: 15px; /*size input filters */
+  padding: 15px;
   border-radius: 999px;
   background: #fff;
   border: 1px solid var(--color-border);

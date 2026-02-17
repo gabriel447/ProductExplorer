@@ -1,3 +1,5 @@
+// Testes de serviço de API
+// Responsabilidades: garantir chamadas corretas e tratamento de erros do módulo api
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { getProducts, getProductById } from '../api'
 

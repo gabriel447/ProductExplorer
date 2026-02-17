@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// Componente de modal de carrinho
+// Responsabilidades: exibir lista de itens, total e controles de fechamento
 import CartInfo from '@/components/CartInfo.vue'
 import type { CartItem } from '@/stores/cartStore'
 import { useCartStore } from '@/stores/cartStore'

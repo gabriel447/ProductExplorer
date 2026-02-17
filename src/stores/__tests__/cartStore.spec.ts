@@ -1,3 +1,5 @@
+// Testes da store de carrinho
+// Responsabilidades: garantir adição, remoção, quantidades e totais corretos
 import { describe, it, expect, beforeEach } from 'vitest'
 import { setActivePinia, createPinia } from 'pinia'
 import { useCartStore } from '../cartStore'
