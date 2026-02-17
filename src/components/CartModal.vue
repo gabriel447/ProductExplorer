@@ -19,16 +19,33 @@ const formatBRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 
 const cartStore = useCartStore()
 
 let previousBodyOverflow: string | null = null
+let previousBodyPosition: string | null = null
+let previousBodyTop: string | null = null
+let previousBodyWidth: string | null = null
+let lockedScrollY = 0
 
 const lockBodyScroll = () => {
-  if (typeof document === 'undefined') return
-  previousBodyOverflow = document.body.style.overflow
-  document.body.style.overflow = 'hidden'
+  if (typeof window === 'undefined' || typeof document === 'undefined') return
+  const body = document.body
+  lockedScrollY = window.scrollY || window.pageYOffset || 0
+  previousBodyOverflow = body.style.overflow
+  previousBodyPosition = body.style.position
+  previousBodyTop = body.style.top
+  previousBodyWidth = body.style.width
+  body.style.overflow = 'hidden'
+  body.style.position = 'fixed'
+  body.style.top = `-${lockedScrollY}px`
+  body.style.width = '100%'
 }
 
 const unlockBodyScroll = () => {
-  if (typeof document === 'undefined') return
-  document.body.style.overflow = previousBodyOverflow || ''
+  if (typeof window === 'undefined' || typeof document === 'undefined') return
+  const body = document.body
+  body.style.overflow = previousBodyOverflow || ''
+  body.style.position = previousBodyPosition || ''
+  body.style.top = previousBodyTop || ''
+  body.style.width = previousBodyWidth || ''
+  window.scrollTo(0, lockedScrollY)
 }
 
 onMounted(lockBodyScroll)
