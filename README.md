@@ -31,7 +31,7 @@ Esse comando executa, em sequência:
 As decisões abaixo resumem como os requisitos do desafio foram traduzidos em código.
 
 - **Stack e organização**  
-  Vue 3 com Composition API, Vue Router, Pinia, TypeScript e Vite. A estrutura é dividida em `views` (`HomeView.vue`, `ProductView.vue`), `components` (por exemplo, `ProductCard.vue`, `CartModal.vue`), `stores` (`productStore.ts`, `cartStore.ts`), `services` (`api.ts`) e `types` (`Product.ts`), mantendo responsabilidades separadas.
+  Vue 3 com Composition API, Vue Router, Pinia, TypeScript e Vite. A estrutura é dividida em `views` (`HomeView.vue`, `ProductView.vue`), `components` (`ProductCard.vue`, `CartModal.vue`), `stores` (`productStore.ts`, `cartStore.ts`), `services` (`api.ts`) e `types` (`Product.ts`), mantendo responsabilidades separadas.
 
 - **Catálogo, busca e filtros**  
   `HomeView.vue` orquestra o catálogo, renderizando um grid responsivo de cards (`ProductCard.vue`) com imagem, nome, preço, categoria e avaliação. A lógica de busca com debounce, filtro por categoria, ordenação por preço/avaliação e paginação fica centralizada na store de produtos (`productStore.ts`).
@@ -50,17 +50,17 @@ As decisões abaixo resumem como os requisitos do desafio foram traduzidos em c�
 
 ## Pontos de melhoria
 
-- **Acessibilidade**  
-  Reforçar atributos ARIA, navegação só por teclado, contraste de cores e definição de `lang="pt-BR"` no `index.html`, além de considerar `prefers-reduced-motion` para usuários sensíveis a animações.
+- **Acessibilidade (pessoas com deficiência)**  
+  Aprimorar suporte para pessoas com deficiência visual, auditiva ou motora, reforçando atributos ARIA, navegação só por teclado, contraste de cores adequado e respeito à preferência de redução de movimento para usuários sensíveis a animações.
 
 - **Testes de interface**  
   Ampliar testes para componentes de UI (`HomeView`, `ProductView`, `ProductCard`, `CartModal`), cobrindo busca, filtros, ordenação, paginação, carrinho e mensagens de erro.
 
-- **Experiência e comunicação de erro**  
-  Melhorar feedback em falhas de rede (ações como “Tentar novamente”) e adicionar pequenos refinamentos de UX no carrinho, como confirmações visuais ao remover itens.
+- **Feedback de ações do usuário**  
+  A aplicação já exibe feedback em pontos-chave (por exemplo, página de 404 quando o produto não existe ou a API não responde, e mensagem ao adicionar itens ao carrinho). Uma melhoria natural seria ampliar esse padrão para mais ações, como remover ou atualizar itens, outros erros de rede e avisos importantes, deixando o comportamento ainda mais transparente para o usuário.
 
-- **SEO básico**  
-  Ajustar título e metadados no `index.html` para refletir “Product Explorer” e oferecer uma descrição melhor ao compartilhar a aplicação.
+- **Componentização ainda mais fina**  
+  Alguns trechos de layout e trechos de lógica visual podem ser extraídos em componentes menores e mais reutilizáveis, o que facilitaria manutenção, testes e reaproveitamento em novas telas (por exemplo, componentes específicos para filtros, listagem vazia ou estados de carregamento/erro).
 
 ## Deploy
 
